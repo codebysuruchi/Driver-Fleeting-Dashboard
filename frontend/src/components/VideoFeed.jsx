@@ -17,7 +17,7 @@ export default function VideoFeed() {
       */}
       <iframe 
         className="w-full h-full object-cover"
-        src="https://www.youtube.com/embed/8aZkYV_B-1k?autoplay=1&mute=1&loop=1&playlist=8aZkYV_B-1k&controls=0&showinfo=0&rel=0" 
+        src="demoVideo.mp4" 
         title="Live Dashcam Feed" 
         frameBorder="0" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
