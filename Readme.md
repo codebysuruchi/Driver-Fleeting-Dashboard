@@ -2,6 +2,42 @@
 
 A real-time fleet monitoring dashboard that simulates driver behavior events such as speeding, harsh braking, and drowsiness. The system calculates driver risk scores and streams real-time data to a dashboard using WebSockets.
 
+## Architecture Diagram
+```
+           +-------------------+
+           |     User Browser  |
+           +-------------------+
+                     |
+                     |
+                     ▼
+           +-------------------+
+           | React Frontend    |
+           | (Vite + Dashboard)|
+           +-------------------+
+                     |
+                     | REST API
+                     ▼
+           +-------------------+
+           | Node.js Backend   |
+           | Express + Socket  |
+           +-------------------+
+             |              |
+             |              |
+             ▼              ▼
+     +-------------+   +---------------+
+     | Event       |   | MySQL         |
+     | Simulator   |   | Database      |
+     +-------------+   +---------------+
+             |
+             |
+             ▼
+      Real-time Events
+       via Socket.IO
+             |
+             ▼
+      Dashboard Updates
+```
+
 ## Project Overview
 
 This project simulates a fleet monitoring system where vehicles and drivers generate driving events in real time. The backend processes these events, stores them in a database, and sends updates to the frontend dashboard.
@@ -289,9 +325,11 @@ These events are stored in the database and pushed to the dashboard in real time
 
 ---
 
+
 ## Author
 
 Suruchi Jha
 
 ---
+
 
