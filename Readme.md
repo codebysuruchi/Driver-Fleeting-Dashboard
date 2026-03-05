@@ -1,35 +1,297 @@
-Live Fleet Monitoring Platform
-This platform simulates live dashcam analytics, ingesting driver events and displaying them on a real-time dashboard.
+# Driver Fleet Monitoring Dashboard
 
-Proposed Changes
-We will create two main directories inside c:/Ayush's/Projects/Tasks/Driver Fleeting Dashboard: backend and frontend.
+A real-time fleet monitoring dashboard that simulates driver behavior events such as speeding, harsh braking, and drowsiness. The system calculates driver risk scores and streams real-time data to a dashboard using WebSockets.
 
-Database Schema (MySQL)
-Three main tables:
+## Project Overview
 
-drivers (id, name, risk_score)
-trips (id, driver_id, start_time, end_time, status)
-events (id, trip_id, type (e.g., speeding, braking, drowsiness), timestamp, metadata)
-Backend (Node.js/Express)
-server.js: Main Express app, connects to MySQL, initializes Socket.io on the HTTP server.
-routes/api.js: Handles REST endpoints (e.g., getting historical data, managing drivers).
-services/simulator.js: Runs an interval strictly every 2-3 seconds to generate random events (speeding, harsh braking) for active trips. Checks logic:
-If speed > 80kmph => trigger "red alert" over WebSocket.
-If >= 3 violations in a single trip => Increment driver's risk score and broadcast update.
-db/init.sql: SQL script to initialize tables and insert seed data.
-Frontend (React + Vite)
-UI built with modern sleek aesthetics (TailwindCSS or modular vanilla CSS, using Chart.js or Recharts).
-Main View:
-Header: Branding and connection status.
-Video Section: Embedded YouTube live stream iframe simulating a dashcam.
-Metrics Row: Total Trips, Live Drivers, Violation Count, Average Risk Score.
-Live Alerts Section: Scrolling list of real-time alerts. Red cards for speed > 80kmph.
-Charts: Driver risk scores and event frequency distributions.
-Verification Plan
-Automated Tests
-Test API endpoints with curl/Postman (or programmatic fetch) to ensure data is returned and ingested.
-Manual Verification
-Start backend, ensure Simulator pushes data via WS.
-Open frontend, verify WS connection.
-Wait and observe automatic updates of alerts without page refresh.
-Check that 3 violations update the corresponding risk score dynamically.
+This project simulates a fleet monitoring system where vehicles and drivers generate driving events in real time. The backend processes these events, stores them in a database, and sends updates to the frontend dashboard.
+
+Key capabilities include:
+
+- Real-time event simulation
+- Driver risk score calculation
+- Live updates using WebSockets
+- Fleet trip monitoring
+- Event storage and analytics
+
+## Tech Stack
+
+Frontend:
+- React (Vite)
+- Socket.IO Client
+- Axios
+
+Backend:
+- Node.js
+- Express.js
+- Socket.IO
+- dotenv
+
+Database:
+- MySQL
+
+Libraries:
+- mysql2
+- cors
+- nodemon
+
+---
+
+## Project Structure
+
+```
+driver-fleet-dashboard
+│
+├── backend
+│ ├── db
+│ │ └── init.js
+| |
+│ ├── services
+│ │ └── simulator.js
+│ │
+│ ├── server.js
+│ └── .env
+│
+├── frontend
+│ ├── src
+│ │ ├── components
+│ │ ├── pages
+│ │ ├── App.jsx
+│ │ └── main.jsx
+│ │
+│ └── package.json
+│
+└── README.md
+```
+
+
+---
+
+## Installation
+
+### Clone the Repository
+```
+git clone https://github.com/your-username/driver-fleet-dashboard.git
+
+cd driver-fleet-dashboard
+```
+
+
+---
+
+## Backend Setup
+
+Navigate to backend folder:
+```
+cd backend
+```
+
+```
+Install dependencies:
+```
+
+
+npm install
+
+- Install required packages if missing:
+
+```
+npm install express mysql2 cors socket.io dotenv nodemon
+```
+
+
+---
+
+## Environment Variables
+
+Create a `.env` file inside backend folder.
+
+Example:
+
+```
+PORT=5000
+
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=yourpassword
+DB_NAME=okdriver_fleet
+```
+
+
+---
+
+## Database Setup (MySQL)
+
+Open MySQL Workbench and run the following queries.
+
+### Create Database
+```
+CREATE DATABASE okdriver_fleet;
+USE okdriver_fleet;
+```
+
+
+---
+
+### Create Drivers Table
+```
+CREATE TABLE drivers (
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(100),
+phone VARCHAR(15),
+risk_score INT DEFAULT 0
+);
+```
+
+---
+
+### Create Trips Table
+```
+CREATE TABLE trips (
+id INT AUTO_INCREMENT PRIMARY KEY,
+driver_id INT,
+vehicle_id INT,
+status VARCHAR(50),
+start_time DATETIME,
+end_time DATETIME,
+FOREIGN KEY (driver_id) REFERENCES drivers(id)
+);
+```
+
+
+---
+
+### Create Events Table
+```
+CREATE TABLE events (
+id INT AUTO_INCREMENT PRIMARY KEY,
+trip_id INT,
+type VARCHAR(50),
+speed INT,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (trip_id) REFERENCES trips(id)
+);
+```
+
+
+---
+
+### Insert Sample Drivers
+```
+INSERT INTO drivers (name, phone, risk_score)
+VALUES
+('Ramesh Kumar','9876543210',20),
+('Suresh Patel','9876543211',15),
+('Amit Singh','9876543212',10);
+```
+
+
+---
+
+### Insert Sample Trips
+```
+INSERT INTO trips (driver_id, vehicle_id, status, start_time)
+VALUES
+(1,101,'active',NOW()),
+(2,102,'active',NOW()),
+(3,103,'active',NOW());
+```
+
+---
+
+## Running the Backend
+
+Start the server using nodemon:
+```
+nodemon server.js
+```
+
+
+Expected output:
+```
+Server running on port 5000
+MySQL Connected
+Simulator Started
+Client connected
+```
+
+
+---
+
+## Frontend Setup
+
+Navigate to frontend folder:
+```
+cd frontend
+```
+
+
+Install dependencies:
+```
+npm i 
+```
+
+
+Run the development server:
+```
+npm run dev
+```
+
+
+Vite will start the app at:
+```
+http://localhost:5173
+```
+
+
+---
+
+## Event Simulation
+
+The simulator generates random driver events such as:
+
+- speeding
+- harsh_braking
+- drowsiness
+- normal driving
+
+Example simulated event:
+```
+{
+trip_id: 1,
+type: "speeding",
+speed: 82
+}
+```
+
+
+These events are stored in the database and pushed to the dashboard in real time.
+
+---
+
+## Features
+
+- Real-time driver behavior simulation
+- Risk score calculation
+- WebSocket-based live dashboard updates
+- MySQL event storage
+- Driver and trip monitoring
+
+---
+
+## Future Improvements
+
+- Map-based vehicle tracking
+- Advanced risk scoring algorithm
+- Driver performance analytics
+- Admin dashboard
+- Alert notifications for dangerous events
+
+---
+
+## Author
+
+Suruchi Jha
+
+---
+
